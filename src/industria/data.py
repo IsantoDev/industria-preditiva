@@ -8,6 +8,15 @@ def load_raw() -> pd.DataFrame:
     "Carrega o CSV bruto para DataFrame"
     return pd.read_csv(RAW_CSV, encoding='utf-8-sig')
 
+
+def load_machine_registry() -> pd.DataFrame:
+    """Cadastro de referência dos tipos de máquina (dimensão)."""
+    return pd.DataFrame({
+        "Type": ["L", "M", "H"],
+        "quality_level": ["Low", "Medium", "High"],
+    })
+
+
 if __name__ == "__main__":
     df = load_raw()
     print("Formato (linhas, colunas):", df.shape)
