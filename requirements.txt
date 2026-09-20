@@ -1,0 +1,19 @@
+# Núcleo de dados
+pandas==3.0.3
+numpy==2.4.6
+
+# Machine Learning
+scikit-learn==1.9.0
+
+# Estatística
+scipy==1.18.1
+
+# Visualização
+matplotlib==3.11.0
+seaborn==0.13.2
+
+# Notebooks (EDA)
+jupyter==1.1.1
+
+# Testes
+pytest==9.1.1

@@ -1,0 +1,27 @@
+# Ambiente Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Dados (não versionar — citar a fonte no README)
+data/raw/
+data/processed/
+*.db
+*.sqlite
+
+# Modelos treinados (artefatos pesados)
+models/
+*.pkl
+*.joblib
+
+# Notebooks (checkpoints automáticos)
+.ipynb_checkpoints/
+
+# Segredos / configuração local
+.env
+
+# Sistema operacional / IDE
+.DS_Store
+.vscode/
