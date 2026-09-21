@@ -2,7 +2,8 @@
 import pandas as pd
 from pathlib import Path
 
-RAW_CSV = Path('data/raw/ai4i2020.csv')
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+RAW_CSV = PROJECT_ROOT / "data" / "raw" / "ai4i2020.csv"
 
 def load_raw() -> pd.DataFrame:
     "Carrega o CSV bruto para DataFrame"
