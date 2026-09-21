@@ -68,6 +68,21 @@ por custo** (falha 10× mais cara que alarme falso → corte 0,25):
 - Baseline "sempre prevê não-falha": 96,6% de acurácia mas **0% de recall** —
   a prova de que acurácia engana em dado desbalanceado.
 
+  
+![Matriz de confusão](reports/figures/matriz_confusao.png)
+![Curva Precision-Recall](reports/figures/precision_recall.png)
+
+## Interpretação — por que falha (inferência)
+
+Uma regressão logística interpretável quantifica o efeito de cada variável na
+chance de falha (odds ratio com intervalo de confiança 95%):
+
+- **Torque:** cada N·m aumenta ~13% a chance de falha.
+- **Desgaste:** cada minuto aumenta ~1%.
+- **Diferença de temperatura:** cada grau reduz ~50% (protege — melhor dissipação de calor).
+
+![Odds ratios](reports/figures/odds_ratios.png)
+
 ## Stack
 
 Python · pandas · NumPy · SQL (SQLite) · SciPy · scikit-learn · Matplotlib ·
