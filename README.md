@@ -5,7 +5,8 @@ sensores, para que a manutenção aja **antes da quebra** — sem trocar peças
 saudáveis à toa.
 
 > 🚧 **Em construção** — projeto de portfólio feito em etapas versionadas (veja o
-> histórico de commits). Dados, EDA e estatística concluídos; modelagem em andamento.
+> histórico de commits). Pipeline de dados, EDA, estatística e **modelo** concluídos;
+> camada de inferência em andamento.
 
 ## Problema de negócio
 
@@ -33,10 +34,9 @@ Duas fontes integradas via **SQL** (modelagem fato + dimensão):
 ## Abordagem
 
 Ingestão → qualidade dos dados → carga e `JOIN` em SQL → EDA + estatística →
-engenharia de atributos → **(próximo)** modelo + avaliação (precision/recall,
-threshold por custo).
+engenharia de atributos → modelo + avaliação (precision/recall, threshold por custo).
 
-## Principais achados (até aqui)
+## Principais achados (dados)
 
 - Máquinas de **qualidade baixa** falham quase o **dobro** das de alta
   (3,92% vs 2,09%).
@@ -44,13 +44,34 @@ threshold por custo).
   falhas (teste t de Welch, **p < 0,001**) — os sinais preditivos mais fortes.
 - Nenhuma variável isolada separa falha/não-falha (boxplots com sobreposição)
   → justifica um **modelo multivariado**.
-- Features físicas criadas alinhadas aos modos de falha do dataset:
+- Features físicas alinhadas aos modos de falha do dataset:
   `power` (torque×rotação), `temp_diff` e `strain` (desgaste×torque).
+
+## Resultados do modelo
+
+Comparação de 3 modelos por **validação cruzada** (f1, sem tocar o teste):
+
+| Modelo | f1 (CV) |
+|---|---|
+| Regressão Logística | 0,27 |
+| Random Forest | 0,86 |
+| **Gradient Boosting** ✅ | **0,89** |
+
+> ⚠️ **Sem vazamento:** os rótulos de modo de falha (`TWF/HDF/PWF/OSF/RNF`) foram
+> removidos das features — só existem no momento da falha.
+
+Modelo final (Gradient Boosting) no **conjunto de teste**, com **threshold calibrado
+por custo** (falha 10× mais cara que alarme falso → corte 0,25):
+
+- **Recall: 85%** — pega 58 de 68 falhas.
+- **Precision: 95%** — só 3 alarmes falsos em 2.000 máquinas.
+- Baseline "sempre prevê não-falha": 96,6% de acurácia mas **0% de recall** —
+  a prova de que acurácia engana em dado desbalanceado.
 
 ## Stack
 
-Python · pandas · NumPy · SQL (SQLite) · SciPy · Matplotlib · Seaborn ·
-scikit-learn · pytest · Git.
+Python · pandas · NumPy · SQL (SQLite) · SciPy · scikit-learn · Matplotlib ·
+Seaborn · Git.
 
 ## Como rodar
 
@@ -61,15 +82,17 @@ scikit-learn · pytest · Git.
     pip install -e .
     python src/industria/download_data.py   # baixa o dataset
     python src/industria/database.py        # monta o banco SQLite
-    # EDA em: notebooks/01_eda.ipynb
+    # EDA:     notebooks/01_eda.ipynb
+    # Modelo:  notebooks/02_modelagem.ipynb
 
 ## Roadmap
 
 - [x] Ingestão + qualidade + SQL
 - [x] EDA + estatística
 - [x] Engenharia de atributos
-- [ ] Modelo + avaliação (precision/recall, threshold por custo)
-- [ ] Dados não estruturados (ordens de serviço) + documentação final
+- [x] Modelo + avaliação (precision/recall, threshold por custo)
+- [-] Camada de inferência (por que falha + confiança)
+
 
 ## Autor
 
