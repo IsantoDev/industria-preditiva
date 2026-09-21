@@ -4,9 +4,8 @@ Prevê se uma máquina está em risco de falhar a partir das leituras dos seus
 sensores, para que a manutenção aja **antes da quebra** — sem trocar peças
 saudáveis à toa.
 
-> 🚧 **Em construção** — projeto de portfólio feito em etapas versionadas (veja o
-> histórico de commits). Pipeline de dados, EDA, estatística e **modelo** concluídos;
-> camada de inferência em andamento.
+> 🚧 **Em construção** — projeto de portfólio feito em etapas versionadas.
+> Dados, EDA, estatística, modelo e inferência concluídos. 
 
 ## Problema de negócio
 
@@ -34,7 +33,7 @@ Duas fontes integradas via **SQL** (modelagem fato + dimensão):
 ## Abordagem
 
 Ingestão → qualidade dos dados → carga e `JOIN` em SQL → EDA + estatística →
-engenharia de atributos → modelo + avaliação (precision/recall, threshold por custo).
+engenharia de atributos → modelo + avaliação → inferência.
 
 ## Principais achados (dados)
 
@@ -60,15 +59,14 @@ Comparação de 3 modelos por **validação cruzada** (f1, sem tocar o teste):
 > ⚠️ **Sem vazamento:** os rótulos de modo de falha (`TWF/HDF/PWF/OSF/RNF`) foram
 > removidos das features — só existem no momento da falha.
 
-Modelo final (Gradient Boosting) no **conjunto de teste**, com **threshold calibrado
-por custo** (falha 10× mais cara que alarme falso → corte 0,25):
+Modelo final (Gradient Boosting) no **conjunto de teste**, com **threshold
+calibrado por custo** (falha 10× mais cara que alarme falso → corte 0,25):
 
 - **Recall: 85%** — pega 58 de 68 falhas.
 - **Precision: 95%** — só 3 alarmes falsos em 2.000 máquinas.
 - Baseline "sempre prevê não-falha": 96,6% de acurácia mas **0% de recall** —
   a prova de que acurácia engana em dado desbalanceado.
 
-  
 ![Matriz de confusão](reports/figures/matriz_confusao.png)
 ![Curva Precision-Recall](reports/figures/precision_recall.png)
 
@@ -79,14 +77,18 @@ chance de falha (odds ratio com intervalo de confiança 95%):
 
 - **Torque:** cada N·m aumenta ~13% a chance de falha.
 - **Desgaste:** cada minuto aumenta ~1%.
-- **Diferença de temperatura:** cada grau reduz ~50% (protege — melhor dissipação de calor).
+- **Diferença de temperatura:** cada grau reduz ~50% (protege — dissipação de calor).
+
+> **Rigor:** as features derivadas (`power`, `strain`) são colineares com o torque
+> (VIF alto), então ficam só no modelo preditivo e são excluídas da regressão
+> interpretável — **prever e explicar pedem ferramentas diferentes**.
 
 ![Odds ratios](reports/figures/odds_ratios.png)
 
 ## Stack
 
-Python · pandas · NumPy · SQL (SQLite) · SciPy · scikit-learn · Matplotlib ·
-Seaborn · Git.
+Python · pandas · NumPy · SQL (SQLite) · SciPy · scikit-learn · statsmodels ·
+Matplotlib · Seaborn · Git.
 
 ## Como rodar
 
@@ -97,8 +99,9 @@ Seaborn · Git.
     pip install -e .
     python src/industria/download_data.py   # baixa o dataset
     python src/industria/database.py        # monta o banco SQLite
-    # EDA:     notebooks/01_eda.ipynb
-    # Modelo:  notebooks/02_modelagem.ipynb
+    # EDA:        notebooks/01_eda.ipynb
+    # Modelo:     notebooks/02_modelagem.ipynb
+    # Inferência: notebooks/03_inferencia.ipynb
 
 ## Roadmap
 
@@ -106,8 +109,7 @@ Seaborn · Git.
 - [x] EDA + estatística
 - [x] Engenharia de atributos
 - [x] Modelo + avaliação (precision/recall, threshold por custo)
-- [-] Camada de inferência (por que falha + confiança)
-
+- [x] Camada de inferência (por que falha + confiança)
 
 ## Autor
 
