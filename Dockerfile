@@ -8,7 +8,8 @@ RUN pip install --no-cache-dir -r requirements-api.txt
 COPY . .
 RUN pip install --no-cache-dir -e .
 
-#EXPOSE 7860
-#CMD ["uvicorn", "industria.api:app", "--host", "0.0.0.0", "--port", "7860"]
+# Usuário não-root (hardening de segurança)
+RUN useradd -m appuser && chown -R appuser /app
+USER appuser
 
 CMD uvicorn industria.api:app --host 0.0.0.0 --port ${PORT:-7860}
