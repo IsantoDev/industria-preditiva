@@ -4,8 +4,11 @@ Prevê se uma máquina está em risco de falhar a partir das leituras dos seus
 sensores, para que a manutenção aja **antes da quebra** — sem trocar peças
 saudáveis à toa.
 
-> 🚧 **Em construção** — projeto de portfólio feito em etapas versionadas.
-> Dados, EDA, estatística, modelo e inferência concluídos. 
+> 🚀 **Demo ao vivo:** **[industria-preditiva.onrender.com](https://industria-preditiva.onrender.com)**
+> — preencha os sensores e receba a previsão em tempo real.
+>
+> Projeto de portfólio **ponta a ponta**: dados → SQL → EDA → estatística → modelo →
+> inferência → **API + frontend + deploy**.
 
 ## Problema de negócio
 
@@ -85,10 +88,22 @@ chance de falha (odds ratio com intervalo de confiança 95%):
 
 ![Odds ratios](reports/figures/odds_ratios.png)
 
+## Serviço em produção (API + frontend)
+
+O modelo é servido por uma **API REST (FastAPI)** com um **frontend web** simples,
+containerizada com **Docker** e **deployada** no Render:
+
+- **`POST /predict`** — recebe as leituras (temperaturas em **°C**, a unidade do
+  operador, convertidas para Kelvin internamente) e devolve `{ vai_falhar, probabilidade }`.
+- **Validação de entrada** (Pydantic): rejeita valores fora da faixa de treino (HTTP 422).
+- **Segurança:** *rate limiting* por IP (20 req/min) contra abuso; container roda como
+  usuário **não-root**.
+- **Docs interativas** automáticas em `/docs`.
+
 ## Stack
 
 Python · pandas · NumPy · SQL (SQLite) · SciPy · scikit-learn · statsmodels ·
-Matplotlib · Seaborn · Git.
+Matplotlib · Seaborn · **FastAPI** · **Docker** · pytest · Git.
 
 ## Como rodar
 
@@ -103,6 +118,12 @@ Matplotlib · Seaborn · Git.
     # Modelo:     notebooks/02_modelagem.ipynb
     # Inferência: notebooks/03_inferencia.ipynb
 
+    # Rodar a API local:
+    uvicorn industria.api:app --reload      # → http://127.0.0.1:8000
+
+    # Ou via Docker:
+    docker build -t industria . && docker run -p 8000:7860 industria
+
 ## Roadmap
 
 - [x] Ingestão + qualidade + SQL
@@ -110,6 +131,9 @@ Matplotlib · Seaborn · Git.
 - [x] Engenharia de atributos
 - [x] Modelo + avaliação (precision/recall, threshold por custo)
 - [x] Camada de inferência (por que falha + confiança)
+- [x] API (FastAPI) + frontend + validação de entrada
+- [x] Deploy (Docker + Render) + segurança (rate limit, non-root)
+- [ ] Ponte SHAP (explicação local) + dados não estruturados
 
 ## Autor
 
