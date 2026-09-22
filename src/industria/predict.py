@@ -16,6 +16,6 @@ def prever(leitura: dict) -> dict:
     df = df.reindex(columns=_colunas,fill_value=0)
     prob = _modelo.predict_proba(df)[0, 1]
     return{
-        "vai falhar": bool(prob>=0.25),
+        "vai_falhar": bool(prob>=0.25),
         "probabilidade": round(float(prob), 4),
     }
