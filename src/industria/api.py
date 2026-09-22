@@ -1,25 +1,27 @@
 """API de predição de falha da maquina"""
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Literal
 from industria.predict import prever
 
 app = FastAPI(title="IndustrIA - Manutenção Preditiva")
 
 
 class Leitura(BaseModel):
-    air_temp: float
-    process_temp: float
-    rotational_speed: float
-    torque: float
-    tool_wear: float
-    type: str
+    """Define o que cada campo recebe | Field mantém dentro do limite do que já foi treinado."""
+    air_temp: float = Field(ge=15, le=40)
+    process_temp: float = Field(ge=25, le=50)
+    rotational_speed: float = Field(ge=1000, le=3000)
+    torque: float = Field(ge=0, le=100)
+    tool_wear: float = Field(ge=0, le=300)
+    type: Literal["L", "M", "H"]
 
 
 @app.post("/predict")
 def predict(leitura: Leitura):
     dados = {
-        "Air temperature [K]": leitura.air_temp,
-        "Process temperature [K]": leitura.process_temp,
+        "Air temperature [K]": leitura.air_temp + 273.15,
+        "Process temperature [K]": leitura.process_temp + 273.15,
         "Rotational speed [rpm]": leitura.rotational_speed,
         "Torque [Nm]": leitura.torque,
         "Tool wear [min]": leitura.tool_wear,
