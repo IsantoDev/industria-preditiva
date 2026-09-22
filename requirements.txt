@@ -18,3 +18,7 @@ jupyter==1.1.1
 
 # Testes
 pytest==9.1.1
+
+# API
+fastapi==0.141.1
+uvicorn==0.53.0

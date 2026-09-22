@@ -25,3 +25,6 @@ models/
 # Sistema operacional / IDE
 .DS_Store
 .vscode/
+
+# pytest
+.pytest_cache/
