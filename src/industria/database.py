@@ -4,8 +4,9 @@ from pathlib import Path
 import pandas as pd
 from industria.data import load_raw, load_machine_registry
 
-DB_PATH = Path("data/industria.db")
-SQL_DIR = Path("sql")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DB_PATH = PROJECT_ROOT / "data" / "industria.db"
+SQL_DIR = PROJECT_ROOT / "sql"
 
 
 def build_database() -> Path:

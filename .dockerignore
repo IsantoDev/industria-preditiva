@@ -1,0 +1,20 @@
+# Ambiente e caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Não precisa na imagem da API
+.git/
+.gitignore
+notebooks/
+data/
+reports/
+sql/
+
+# SO / IDE
+.vscode/
+.DS_Store
