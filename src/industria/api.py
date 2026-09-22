@@ -2,10 +2,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Literal
+from fastapi.responses import FileResponse
+from pathlib import Path
 from industria.predict import prever
 
 app = FastAPI(title="IndustrIA - Manutenção Preditiva")
-
+STATIC_DIR = Path(__file__).resolve().parents[2] / "static"
 
 class Leitura(BaseModel):
     """Define o que cada campo recebe | Field mantém dentro do limite do que já foi treinado."""
@@ -29,3 +31,8 @@ def predict(leitura: Leitura):
 
     }
     return prever(dados)
+
+
+@app.get("/")
+def home():
+    return FileResponse(STATIC_DIR / "index.html")

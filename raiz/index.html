@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IndustrIA — Manutenção Preditiva</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 40px auto; padding: 0 16px; background: #0f172a; color: #e2e8f0; }
+    h1 { font-size: 1.5rem; margin-bottom: 4px; }
+    p.sub { color: #94a3b8; margin-top: 0; }
+    label { display: block; margin: 12px 0 4px; font-size: 0.9rem; }
+    input, select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; box-sizing: border-box; }
+    button { margin-top: 20px; width: 100%; padding: 12px; border: 0; border-radius: 6px; background: #2563eb; color: white; font-size: 1rem; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    #resultado { margin-top: 20px; padding: 16px; border-radius: 8px; text-align: center; font-size: 1.1rem; display: none; }
+    .ok { background: #14532d; }
+    .falha { background: #7f1d1d; }
+  </style>
+</head>
+<body>
+  <h1>🏭 IndustrIA</h1>
+  <p class="sub">Previsão de falha de máquina a partir dos sensores.</p>
+  <form id="form">
+    <label>Temperatura do ar (°C)</label>
+    <input name="air_temp" type="number" step="0.1" value="27">
+    <label>Temperatura do processo (°C)</label>
+    <input name="process_temp" type="number" step="0.1" value="37">
+    <label>Rotação (rpm)</label>
+    <input name="rotational_speed" type="number" value="1500">
+    <label>Torque (N·m)</label>
+    <input name="torque" type="number" step="0.1" value="40">
+    <label>Desgaste da ferramenta (min)</label>
+    <input name="tool_wear" type="number" value="100">
+    <label>Tipo da máquina</label>
+    <select name="type"><option>L</option><option>M</option><option>H</option></select>
+    <button type="submit">Prever</button>
+  </form>
+  <div id="resultado"></div>
+  <script>
+    const form = document.getElementById("form");
+    const resultado = document.getElementById("resultado");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      resultado.style.display = "block";
+      resultado.className = "";
+      resultado.textContent = "Consultando...";
+      const dados = {
+        air_temp: parseFloat(form.air_temp.value),
+        process_temp: parseFloat(form.process_temp.value),
+        rotational_speed: parseFloat(form.rotational_speed.value),
+        torque: parseFloat(form.torque.value),
+        tool_wear: parseFloat(form.tool_wear.value),
+        type: form.type.value,
+      };
+      try {
+        const resp = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dados),
+        });
+        if (!resp.ok) { resultado.className = "falha"; resultado.textContent = "Dados fora da faixa válida."; return; }
+        const r = await resp.json();
+        const pct = (r.probabilidade * 100).toFixed(1);
+        resultado.className = r.vai_falhar ? "falha" : "ok";
+        resultado.textContent = r.vai_falhar
+          ? `⚠️ RISCO DE FALHA — ${pct}% de probabilidade`
+          : `✅ Máquina OK — ${pct}% de risco`;
+      } catch {
+        resultado.className = "falha";
+        resultado.textContent = "Erro ao consultar a API.";
+      }
+    });
+  </script>
+</body>
+</html>
