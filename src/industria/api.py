@@ -7,7 +7,7 @@ from pathlib import Path
 from industria.predict import prever
 
 app = FastAPI(title="IndustrIA - Manutenção Preditiva")
-STATIC_DIR = Path(__file__).resolve().parents[2] / "static"
+STATIC_DIR = Path(__file__).resolve().parents[2] / "raiz"
 
 class Leitura(BaseModel):
     """Define o que cada campo recebe | Field mantém dentro do limite do que já foi treinado."""
